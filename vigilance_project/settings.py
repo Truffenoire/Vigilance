@@ -17,8 +17,8 @@ load_dotenv(BASE_DIR / '.env')
 # Clé secrète (lue depuis .env, jamais codée en dur)
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-insecure-key-for-dev-only-32charmin')
 
-# Mode débogage
-DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
+# Mode débogage : désactivé par défaut en production
+DEBUG = os.getenv("DEBUG", "False").strip().lower() in ("true", "1", "yes")
 
 # Hôtes autorisés
 raw_allowed_hosts = os.environ.get(
@@ -31,21 +31,31 @@ ALLOWED_HOSTS = [
     for host in raw_allowed_hosts.split(",")
     if host.strip()
 ]
+
+# Origines autorisées pour les requêtes CSRF
+raw_csrf_origins = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://web-production-31bcf2.up.railway.app",
+)
+
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get(
-        "CSRF_TRUSTED_ORIGINS",
-        "https://web-production-31bcf2.up.railway.app",
-    ).split(",")
+    origin.strip().rstrip("/")
+    for origin in raw_csrf_origins.split(",")
     if origin.strip()
 ]
-# Autorisation des tunnels ngrok pour les démos (ne pas activer en production)
+
+# Autorisation des tunnels ngrok uniquement en développement
 if DEBUG:
-    ALLOWED_HOSTS += ['*.ngrok-free.app', '*.ngrok.io', '*.ngrok.app']
-    CSRF_TRUSTED_ORIGINS = [
-        'https://*.ngrok-free.app',
-        'https://*.ngrok.io',
-        'https://*.ngrok.app',
+    ALLOWED_HOSTS += [
+        ".ngrok-free.app",
+        ".ngrok.io",
+        ".ngrok.app",
+    ]
+
+    CSRF_TRUSTED_ORIGINS += [
+        "https://*.ngrok-free.app",
+        "https://*.ngrok.io",
+        "https://*.ngrok.app",
     ]
 
 # Applications installées
