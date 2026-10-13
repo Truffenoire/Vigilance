@@ -1,0 +1,46 @@
+# Python / Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environnements virtuels
+.venv/
+venv/
+ENV/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Fichiers de stockage temporaire et local
+storage/temp/*
+!storage/temp/.gitkeep
+storage/archive/*
+!storage/archive/.gitkeep
+
+# Secrets et identifiants sensibles
+.env
+credentials.json
+token.json
+service_account.json
+*.pem
+*.key
+
+# IDE et OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Tests et coverage
+.pytest_cache/
+.coverage
+htmlcov/

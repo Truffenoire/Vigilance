@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lien invalide ou expiré - Portail Vigilance</title>
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --primary: #2563eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            padding: 36px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .icon {
+            width: 64px;
+            height: 64px;
+            background: #fee2e2;
+            color: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        p { color: var(--text-muted); font-size: 15px; line-height: 1.5; margin-bottom: 24px; }
+        .help-box {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon">⚠️</div>
+        {% if is_revoked %}
+            <h1>Ce lien a été révoqué</h1>
+            <p>Le lien d'accès pour <strong>{{ upload_request.company.name }}</strong> a été désactivé par l'administrateur.</p>
+        {% else %}
+            <h1>Ce lien a expiré</h1>
+            <p>La date limite de dépôt pour <strong>{{ upload_request.company.name }}</strong> a été dépassée.</p>
+        {% endif %}
+        <div class="help-box">
+            <strong>Que faire ?</strong><br>
+            Veuillez contacter votre donneur d'ordre ou l'administrateur de la plateforme pour recevoir un nouveau lien de dépôt sécurisé.
+        </div>
+    </div>
+</body>
+</html>

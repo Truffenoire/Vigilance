@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace de Dépôt Sécurisé – {{ company.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary:        #2563eb;
+            --primary-hover:  #1d4ed8;
+            --primary-light:  #eff6ff;
+            --bg-page:        #f1f5f9;
+            --card-bg:        #ffffff;
+            --text-main:      #0f172a;
+            --text-muted:     #64748b;
+            --border:         #e2e8f0;
+            --success-bg:     #dcfce7;
+            --success-text:   #15803d;
+            --success-border: #86efac;
+            --warning-bg:     #fef9c3;
+            --warning-text:   #854d0e;
+            --danger-bg:      #fee2e2;
+            --danger-text:    #b91c1c;
+            --danger-border:  #fca5a5;
+            --radius:         14px;
+            --shadow-sm:      0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-md:      0 4px 16px rgba(0,0,0,.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 32px 16px 110px;
+            line-height: 1.6;
+        }
+        .container { max-width: 760px; margin: 0 auto; }
+
+        /* En-tête */
+        .header-card {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .badge-secure {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.3);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        .header-card h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .header-meta { font-size: 14px; opacity: .85; margin-bottom: 10px; }
+        .header-desc { font-size: 14px; opacity: .75; }
+
+        /* Alertes */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border: 1px solid transparent;
+        }
+        .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .alert-success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+        .alert-error   { background: var(--danger-bg);  color: var(--danger-text);  border-color: var(--danger-border); }
+        .alert-info    { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+
+        /* Section titre */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-title { font-size: 17px; font-weight: 700; color: #1e293b; }
+        .helper-text   { font-size: 13px; color: var(--text-muted); }
+
+        /* Carte document */
+        .req-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .req-card.has-file {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.1), var(--shadow-sm);
+        }
+        .req-card.is-done { border-color: var(--success-border); background: #f0fdf4; }
+
+        .req-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .req-num {
+            width: 28px; height: 28px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #475569;
+            flex-shrink: 0;
+        }
+        .req-num.done    { background: var(--success-bg); color: var(--success-text); }
+        .req-num.pending { background: #dbeafe; color: #1d4ed8; }
+        .req-title-wrap { flex: 1; }
+        .req-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .req-desc  { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Pills */
+        .status-pill {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .pill-pending  { background: #f1f5f9; color: #475569; }
+        .pill-selected { background: #dbeafe; color: #1e40af; }
+        .pill-success  { background: var(--success-bg); color: var(--success-text); }
+        .pill-warning  { background: var(--warning-bg); color: var(--warning-text); }
+        .pill-error    { background: var(--danger-bg);  color: var(--danger-text); }
+
+        /* Doc existant */
+        .doc-existing {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .doc-existing-icon { font-size: 20px; flex-shrink: 0; }
+        .doc-existing-name { font-weight: 600; color: var(--text-main); }
+        .doc-existing-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Zone fichier */
+        .file-pick-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all .2s ease;
+            min-height: 64px;
+        }
+        .file-pick-area:hover { border-color: var(--primary); background: var(--primary-light); }
+        .file-pick-area.has-file-input { border-color: #3b82f6; border-style: solid; background: #eff6ff; }
+        .file-pick-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .file-pick-icon  { font-size: 24px; flex-shrink: 0; pointer-events: none; z-index: 0; }
+        .file-pick-text  { pointer-events: none; flex: 1; z-index: 0; }
+        .file-pick-label { font-size: 14px; font-weight: 600; color: #334155; }
+        .file-pick-spec  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .file-pick-area.has-file-input .file-pick-label { color: #1d4ed8; }
+
+        .file-clear-btn {
+            display: none;
+            background: #fee2e2;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #b91c1c;
+            cursor: pointer;
+            z-index: 10;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .file-clear-btn:hover { background: #fca5a5; }
+        .has-file-input .file-clear-btn { display: block; }
+
+        /* Barre d'envoi sticky */
+        .send-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #ffffff;
+            border-top: 2px solid #e2e8f0;
+            box-shadow: 0 -4px 24px rgba(0,0,0,.1);
+            padding: 14px 24px;
+            z-index: 200;
+        }
+        .send-bar-inner {
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .send-bar-title   { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .send-bar-counter { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        .send-bar-counter strong { color: #1d4ed8; }
+
+        .btn-send-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 28px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37,99,235,.3);
+            transition: all .2s ease;
+            white-space: nowrap;
+        }
+        .btn-send-all:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(37,99,235,.35);
+        }
+        .btn-send-all:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .spinner {
+            display: none;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 28px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- En-tête -->
+    <header class="header-card">
+        <div class="badge-secure">🔒 Espace Sécurisé · Devoir de Vigilance</div>
+        <h1>{{ company.name }}</h1>
+        <div class="header-meta">
+            {% if company.siren %}<span><strong>SIREN/SIRET :</strong> {{ company.siren }} &nbsp;·&nbsp; </span>{% endif %}
+            <span><strong>Contact :</strong> {{ company.contact_name }} ({{ company.contact_email }})</span>
+        </div>
+        <p class="header-desc">
+            Choisissez vos fichiers pour chaque document, puis cliquez sur
+            <strong>« Envoyer tous les documents »</strong> pour tout transmettre en une seule fois.
+        </p>
+    </header>
+
+    <!-- Messages système -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'info' %}alert-info{% else %}alert-success{% endif %}">
+                <span class="alert-icon">{% if message.tags == 'error' %}❌{% elif message.tags == 'info' %}ℹ️{% else %}✅{% endif %}</span>
+                <div>{{ message }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ══════════════════════════════════════════
+         FORMULAIRE GLOBAL — UN SEUL ENVOI GROUPÉ
+         ══════════════════════════════════════════ -->
+    <form method="POST" enctype="multipart/form-data" id="global-upload-form">
+        {% csrf_token %}
+        <input type="hidden" name="action_type" value="batch">
+
+        <div class="section-header">
+            <h2 class="section-title">Documents requis ({{ requirements_data|length }})</h2>
+            <span class="helper-text">PDF · JPEG · PNG — max {{ max_size_mb }} Mo</span>
+        </div>
+
+        {% for item in requirements_data %}
+        {% with req=item.requirement doc=item.latest_doc %}
+        <div class="req-card {% if item.is_submitted %}is-done{% endif %}" id="card-{{ req.id }}">
+
+            <div class="req-header">
+                <div class="req-num {% if item.is_submitted %}done{% else %}pending{% endif %}" id="num-{{ req.id }}">
+                    {% if item.is_submitted %}✓{% else %}{{ forloop.counter }}{% endif %}
+                </div>
+                <div class="req-title-wrap">
+                    <div class="req-title">{{ req.name }}</div>
+                    {% if req.description %}<div class="req-desc">{{ req.description }}</div>{% endif %}
+                </div>
+                <span class="status-pill {% if item.is_submitted %}pill-success{% else %}pill-pending{% endif %}" id="pill-{{ req.id }}">
+                    {% if item.is_submitted %}✓ Archivé{% else %}En attente{% endif %}
+                </span>
+            </div>
+
+            <!-- Document déjà archivé -->
+            {% if doc and doc.status != 'ERREUR' %}
+            <div class="doc-existing">
+                <span class="doc-existing-icon">📄</span>
+                <div>
+                    <div class="doc-existing-name">{{ doc.original_filename }}</div>
+                    <div class="doc-existing-meta">
+                        Déposé le {{ doc.submitted_at|date:"d/m/Y à H:i" }}
+                        &nbsp;·&nbsp; {{ doc.file_size_bytes|filesizeformat }}
+                        {% if doc.storage_backend == 'google_drive' and doc.drive_file_id %}
+                            &nbsp;·&nbsp; <span style="color:#15803d;font-weight:700;">☁ Google Drive</span>
+                        {% elif doc.local_archive_path %}
+                            &nbsp;·&nbsp; <span style="color:#0369a1;font-weight:700;">🗄 Archive locale</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Zone de sélection de fichier -->
+            <div class="file-pick-area" id="drop-{{ req.id }}">
+                <span class="file-pick-icon" id="icon-{{ req.id }}">{% if item.is_submitted %}🔄{% else %}📂{% endif %}</span>
+                <div class="file-pick-text">
+                    <div class="file-pick-label" id="label-{{ req.id }}">
+                        {% if item.is_submitted %}Remplacer par un nouveau fichier (optionnel){% else %}Cliquez ici pour choisir un fichier{% endif %}
+                    </div>
+                    <div class="file-pick-spec" id="spec-{{ req.id }}">PDF, JPEG ou PNG — max {{ max_size_mb }} Mo</div>
+                </div>
+                <!-- Bouton Retirer — au-dessus de l'input transparent -->
+                <button type="button" class="file-clear-btn" id="clear-{{ req.id }}"
+                        onclick="clearFile('{{ req.id }}'); event.stopPropagation();">✕ Retirer</button>
+                <input
+                    type="file"
+                    name="file_{{ req.id }}"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    class="requirement-file-input"
+                    id="input-{{ req.id }}"
+                    data-req-id="{{ req.id }}"
+                    data-is-submitted="{% if item.is_submitted %}true{% else %}false{% endif %}"
+                >
+            </div>
+
+        </div>
+        {% endwith %}
+        {% empty %}
+        <p style="color:var(--text-muted);padding:20px 0;">Aucune exigence documentaire définie pour cette entreprise.</p>
+        {% endfor %}
+
+        <footer class="footer-note">
+            🛡️ Plateforme sécurisée de conformité — devoir de vigilance<br>
+            <span style="font-size:11px;">Le statut « Archivé » atteste de l'intégrité technique du fichier, sans valider son authenticité juridique.</span>
+        </footer>
+
+        <!-- Barre d'envoi groupé sticky -->
+        <div class="send-bar">
+            <div class="send-bar-inner">
+                <div>
+                    <div class="send-bar-title">Envoi groupé de tous les documents</div>
+                    <div class="send-bar-counter" id="selection-counter">Aucun fichier sélectionné pour le moment</div>
+                </div>
+                <button type="submit" class="btn-send-all" id="submit-all-btn" disabled>
+                    <span>📤</span>
+                    <span id="btn-text">Envoyer tous les documents</span>
+                    <span class="spinner" id="spinner"></span>
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fileInputs = document.querySelectorAll('.requirement-file-input');
+    const submitBtn  = document.getElementById('submit-all-btn');
+    const btnText    = document.getElementById('btn-text');
+    const spinner    = document.getElementById('spinner');
+    const counter    = document.getElementById('selection-counter');
+    const form       = document.getElementById('global-upload-form');
+
+    function refreshCard(input) {
+        var reqId    = input.dataset.reqId;
+        var dropArea = document.getElementById('drop-'  + reqId);
+        var label    = document.getElementById('label-' + reqId);
+        var spec     = document.getElementById('spec-'  + reqId);
+        var icon     = document.getElementById('icon-'  + reqId);
+        var pill     = document.getElementById('pill-'  + reqId);
+        var card     = document.getElementById('card-'  + reqId);
+
+        if (input.files && input.files[0]) {
+            var file   = input.files[0];
+            var sizeMb = (file.size / 1048576).toFixed(2);
+            dropArea.classList.add('has-file-input');
+            card.classList.add('has-file');
+            card.classList.remove('is-done');
+            icon.textContent  = '📄';
+            label.innerHTML   = '<strong>' + file.name + '</strong>';
+            label.style.color = '#1d4ed8';
+            spec.innerHTML    = '<span style="color:#15803d;font-weight:600;">✓ Prêt à envoyer (' + sizeMb + ' Mo)</span>';
+            pill.textContent  = '✏️ Nouveau';
+            pill.className    = 'status-pill pill-selected';
+        } else {
+            dropArea.classList.remove('has-file-input');
+            card.classList.remove('has-file');
+            label.style.color = '';
+            var submitted = input.dataset.isSubmitted === 'true';
+            icon.textContent  = submitted ? '🔄' : '📂';
+            label.textContent = submitted
+                ? 'Remplacer par un nouveau fichier (optionnel)'
+                : 'Cliquez ici pour choisir un fichier';
+            spec.textContent  = 'PDF, JPEG ou PNG — max {{ max_size_mb }} Mo';
+            if (submitted) {
+                pill.textContent = '✓ Archivé';
+                pill.className   = 'status-pill pill-success';
+                card.classList.add('is-done');
+            } else {
+                pill.textContent = 'En attente';
+                pill.className   = 'status-pill pill-pending';
+            }
+        }
+    }
+
+    function refreshGlobal() {
+        var count = 0;
+        fileInputs.forEach(function(inp) {
+            if (inp.files && inp.files[0]) count++;
+        });
+        if (count > 0) {
+            submitBtn.disabled  = false;
+            counter.innerHTML   = '<strong>' + count + ' document' + (count > 1 ? 's' : '') + ' sélectionné' + (count > 1 ? 's' : '') + '</strong> — cliquez sur le bouton pour tout envoyer en une fois';
+            btnText.textContent = count > 1 ? 'Envoyer les ' + count + ' documents' : 'Envoyer le document';
+        } else {
+            submitBtn.disabled  = true;
+            counter.textContent = 'Aucun fichier sélectionné pour le moment';
+            btnText.textContent = 'Envoyer tous les documents';
+        }
+    }
+
+    /* Efface la sélection d'un seul champ sans toucher aux autres */
+    window.clearFile = function(reqId) {
+        var input = document.getElementById('input-' + reqId);
+        input.value = '';
+        refreshCard(input);
+        refreshGlobal();
+    };
+
+    fileInputs.forEach(function(input) {
+        input.addEventListener('change', function() {
+            refreshCard(this);
+            refreshGlobal();
+        });
+    });
+
+    /* Feedback pendant l'envoi */
+    form.addEventListener('submit', function() {
+        submitBtn.disabled    = true;
+        btnText.textContent   = 'Envoi en cours…';
+        spinner.style.display = 'block';
+    });
+
+    refreshGlobal();
+});
+</script>
+</body>
+</html>

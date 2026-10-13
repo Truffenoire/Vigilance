@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Contrôle & Devoir de Vigilance</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success-bg: #dcfce7;
+            --success-text: #15803d;
+            --warning-bg: #fef9c3;
+            --warning-text: #854d0e;
+            --danger-bg: #fee2e2;
+            --danger-text: #b91c1c;
+            --info-bg: #e0f2fe;
+            --info-text: #0369a1;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-page); color: var(--text-main); line-height: 1.5; padding: 30px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* En-tête */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            border-radius: 12px;
+        }
+        .topbar h1 { font-size: 22px; font-weight: 800; }
+        .topbar .actions { display: flex; gap: 12px; }
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        /* KPI Cards */
+        .grid-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+        }
+        .kpi-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .kpi-value { font-size: 26px; font-weight: 800; margin-top: 6px; }
+
+        /* Tables & Sections */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-title { font-size: 17px; font-weight: 700; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #fbfcfe; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .badge-recu { background: var(--info-bg); color: var(--info-text); }
+        .badge-format { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-archive { background: var(--success-bg); color: var(--success-text); }
+        .badge-examiner { background: #ffedd5; color: #c2410c; }
+        .badge-erreur { background: var(--danger-bg); color: var(--danger-text); }
+
+        .progress-bar-container {
+            width: 100px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        .progress-bar-fill.complete { background: #16a34a; }
+
+        .notice-legal {
+            margin-top: 24px;
+            background: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 12px;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top bar -->
+        <div class="topbar">
+            <div>
+                <h1>Tableau de Bord • Devoir de Vigilance</h1>
+                <p style="font-size: 13px; color: var(--text-muted);">Suivi centralisé des pièces justificatives et des contrôles d'intégrité.</p>
+            </div>
+            <div class="actions">
+                <a href="/admin/vigilance_core/company/add/" class="btn btn-primary">+ Ajouter une entreprise</a>
+                <a href="/admin/" class="btn btn-outline">Console Admin Django</a>
+            </div>
+        </div>
+
+        <!-- Indicateurs KPIs -->
+        <div class="grid-kpis">
+            <div class="kpi-card">
+                <div class="kpi-label">Entreprises suivies</div>
+                <div class="kpi-value">{{ total_companies }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Documents reçus</div>
+                <div class="kpi-value">{{ total_documents }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Archivés avec succès</div>
+                <div class="kpi-value" style="color: #16a34a;">{{ count_archive }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">À examiner (sans texte)</div>
+                <div class="kpi-value" style="color: #d97706;">{{ count_a_examiner }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Rejets & Erreurs</div>
+                <div class="kpi-value" style="color: #dc2626;">{{ count_erreur }}</div>
+            </div>
+        </div>
+
+        <!-- Synthèse par entreprise partenaire -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">Conformité par entreprise partenaire</div>
+                <span style="font-size: 12px; color: var(--text-muted);">{{ companies_summary|length }} partenaire(s) répertorié(s)</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Entreprise</th>
+                        <th>SIREN</th>
+                        <th>Contact</th>
+                        <th>Complétude</th>
+                        <th>Lien de dépôt sécurisé</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comp in companies_summary %}
+                        <tr>
+                            <td><strong>{{ comp.company.name }}</strong></td>
+                            <td>{{ comp.company.siren|default:"-" }}</td>
+                            <td>{{ comp.company.contact_name }} <br><span style="color: var(--text-muted); font-size: 11px;">{{ comp.company.contact_email }}</span></td>
+                            <td>
+                                <div>
+                                    <span style="font-weight: 700; color: {% if comp.is_complete %}#16a34a{% else %}#d97706{% endif %};">
+                                        {{ comp.valid_docs }} / {{ comp.total_reqs }}
+                                    </span>
+                                    {% if comp.is_complete %}
+                                        <span style="color: #16a34a; font-weight: 600; font-size: 11px; margin-left: 6px;">✓ Conforme</span>
+                                    {% else %}
+                                        <span style="color: #d97706; font-size: 11px; margin-left: 6px;">Incomplet</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if comp.active_link %}
+                                    <a href="{{ comp.active_link.get_deposit_url }}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: underline;">
+                                        Ouvrir l'espace dépôt
+                                    </a>
+                                {% else %}
+                                    <span style="color: #dc2626; font-size: 12px;">Aucun lien actif</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/admin/vigilance_core/company/{{ comp.company.id }}/change/" style="color: #64748b; font-size: 12px;">Gérer</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Aucune entreprise partenaire enregistrée pour le moment.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Derniers documents traités -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">Journal des derniers documents soumis</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Entreprise</th>
+                        <th>Catégorie</th>
+                        <th>Fichier normalisé</th>
+                        <th>Taille</th>
+                        <th>Statut</th>
+                        <th>Texte extrait</th>
+                        <th>Stockage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in recent_documents %}
+                        <tr>
+                            <td>{{ doc.submitted_at|date:"d/m/Y H:i" }}</td>
+                            <td><strong>{{ doc.company.name }}</strong></td>
+                            <td>{{ doc.requirement.name }}</td>
+                            <td style="font-family: monospace; font-size: 11px;">{{ doc.normalized_filename }}</td>
+                            <td>{{ doc.file_size_bytes|filesizeformat }}</td>
+                            <td>
+                                {% if doc.status == 'ARCHIVE_DRIVE' %}
+                                    <span class="status-badge badge-archive">Archivé</span>
+                                {% elif doc.status == 'TEXTE_EXTRAIT' %}
+                                    <span class="status-badge badge-format">Texte extrait</span>
+                                {% elif doc.status == 'FORMAT_VALIDE' %}
+                                    <span class="status-badge badge-format">Format vérifié</span>
+                                {% elif doc.status == 'A_EXAMINER' %}
+                                    <span class="status-badge badge-examiner">À examiner</span>
+                                {% elif doc.status == 'ERREUR' %}
+                                    <span class="status-badge badge-erreur" title="{{ doc.error_message }}">Erreur</span>
+                                {% else %}
+                                    <span class="status-badge badge-recu">Reçu</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if doc.has_usable_text %}
+                                    <span style="color: #16a34a; font-weight: 600;">Oui ({{ doc.extracted_text_char_count }} car.)</span>
+                                {% else %}
+                                    <span style="color: #94a3b8;">Non</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if doc.storage_backend == 'google_drive' and doc.drive_file_id %}
+                                    <span style="color: #15803d; font-size: 11px;">Google Drive</span>
+                                {% elif doc.storage_backend == 'local_archive' and doc.local_archive_path %}
+                                    <span style="color: #0284c7; font-size: 11px;">Archive locale</span>
+                                {% else %}
+                                    <span style="color: #94a3b8; font-size: 11px;">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Aucun document n'a encore été déposé.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notice-legal">
+            <strong>Rappel de conformité légale :</strong>
+            Le statut « Format vérifié » atteste uniquement que le fichier répond aux critères techniques requis (format MIME, lisibilité, taille). Il ne préjuge pas de l'authenticité juridique de la pièce ni de la conformité de l'entreprise vis-à-vis des organismes officiels.
+        </div>
+    </div>
+</body>
+</html>
