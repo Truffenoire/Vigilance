@@ -21,13 +21,16 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default-insecure-key-for-dev-only-32charmi
 DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
 
 # Hôtes autorisés
-raw_allowed_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+raw_allowed_hosts = os.environ.get(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1,web-production-31bcf2.up.railway.app",
+)
+
 ALLOWED_HOSTS = [
-    h.strip() for h in raw_allowed_hosts.split(',') if h.strip(),
-    "web-production-31bcf2.up.railway.app",
-    "localhost",
-    "127.0.0.1",
-    ]
+    host.strip()
+    for host in raw_allowed_hosts.split(",")
+    if host.strip()
+]
 
 # Autorisation des tunnels ngrok pour les démos (ne pas activer en production)
 if DEBUG:
