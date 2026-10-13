@@ -31,7 +31,14 @@ ALLOWED_HOSTS = [
     for host in raw_allowed_hosts.split(",")
     if host.strip()
 ]
-
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://web-production-31bcf2.up.railway.app",
+    ).split(",")
+    if origin.strip()
+]
 # Autorisation des tunnels ngrok pour les démos (ne pas activer en production)
 if DEBUG:
     ALLOWED_HOSTS += ['*.ngrok-free.app', '*.ngrok.io', '*.ngrok.app']
